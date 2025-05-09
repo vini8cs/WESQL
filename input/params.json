@@ -1,0 +1,10 @@
+{
+	"samples": [
+	  {
+        "sample_id" : "NA06994",
+		"cram_file" : "/media/vini8cs/HD_vinicius1/hospital_incor/NA06994.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram",
+        "cram_index" : "/media/vini8cs/HD_vinicius1/hospital_incor/NA06994.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram.crai",
+        "bed_file" : "/media/vini8cs/HD_vinicius1/hospital_incor/hg38_exome_v2.0.2_targets_sorted_validated.re_annotated.bed"
+	  }
+	]
+  }
