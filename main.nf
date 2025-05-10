@@ -1,5 +1,15 @@
 include { MD5SUM } from './modules/nf-core/md5sum/main'
 include { MD5SUM_CHECKHASH } from './modules/local/md5sum/checkhash/main'
+include { SAMTOOLS_FLAGSTAT } from './modules/nf-core/samtools/flagstat/main'
+include { SAMTOOLS_STATS } from './modules/nf-core/samtools/stats/main'
+include { MOSDEPTH } from './modules/nf-core/mosdepth/main'
+include { MOSDEPTH_CREATEGRAPH } from './modules/local/mosdepth/creategraph/main'
+
+def remove_item_from_meta(meta, item) {
+    def new_meta = meta.clone()
+    new_meta.remove(item)
+    return new_meta
+}
 
 workflow {
     cram_file_ch = Channel.fromList(params.samples).map { sample ->
@@ -17,6 +27,8 @@ workflow {
     samples_ch = cram_file_ch
         .concat(cram_index_ch)
         .concat(bed_file_ch)
+    
+    // Checksum files
     
     md5sum_check_value_ch = MD5SUM(
         samples_ch.map{meta, file, _md5 -> 
@@ -43,5 +55,32 @@ workflow {
         }
     }
 
-    
+    // Alignment Statistics
+
+    cram_ch = cram_file_ch.map { meta, file, _md5 ->
+        def new_meta = remove_item_from_meta(meta, "file")
+        tuple(new_meta, file)
+    }.combine(
+        cram_index_ch.map { meta, file, _md5 ->
+            def new_meta = remove_item_from_meta(meta, "file")
+            tuple(new_meta, file)
+        }, by: 0
+    )
+
+    SAMTOOLS_FLAGSTAT(cram_ch)
+    SAMTOOLS_STATS(cram_ch, [[],[]])
+    SAMTOOLS_STATS.out.stats.view()
+
+    // Coverage
+
+    mosdepth_ch = cram_ch.combine(
+        bed_file_ch.map { meta, file, _md5 ->
+            def new_meta = remove_item_from_meta(meta, "file")
+            tuple(new_meta, file)
+        }, by: 0
+    )
+
+    coverage_results_ch = MOSDEPTH(mosdepth_ch, [[],[]])
+
+    MOSDEPTH_CREATEGRAPH(coverage_results_ch.global_txt)
 }
