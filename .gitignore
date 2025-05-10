@@ -1,2 +1,6 @@
+# nextflow
 params.config
 tower_defaults.config
+.nextflow*
+work
+results
