@@ -1,9 +1,7 @@
 process MOSDEPTH_CREATEGRAPH {
     tag "${meta.id}"
     debug params.debug
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/mosdepth:0.3.10--h4e814b3_1' :
-        'biocontainers/mosdepth:0.3.10--h4e814b3_1'}"
+    container "docker.io/vini8cs/mosdepth_graph:1.0"
 
     input:
         tuple val(meta), path(global_txt)
@@ -12,7 +10,7 @@ process MOSDEPTH_CREATEGRAPH {
 
     script:
     """
-    python plot-dist.py ${global_txt}
+    python /mosdepth/scripts/plot-dist.py ${global_txt}
     """
     stub:
     """

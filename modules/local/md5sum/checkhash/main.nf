@@ -3,7 +3,7 @@ process MD5SUM_CHECKHASH {
     debug params.debug
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/ubuntu:20.04' :
-        'nf-core/ubuntu:20.04' }"
+        'quay.io/nf-core/ubuntu:20.04' }"
 
     input:
     tuple val(meta), path(md5sum_file), val(base_md5sum)

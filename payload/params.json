@@ -1,4 +1,4 @@
-{
+{	"human_genome": "/media/vini8cs/HD_vinicius1/human_genome/GCF_000001405.40_GRCh38.p14_genomic.fna",
 	"samples": [
 	  {
 		"sample_id": "NA06994",

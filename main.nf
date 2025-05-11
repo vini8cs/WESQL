@@ -28,6 +28,10 @@ workflow {
         .concat(cram_index_ch)
         .concat(bed_file_ch)
     
+    human_genome_ch = Channel.fromPath(params.human_genome).map { file ->
+        tuple([id: "human_genome"], file)
+    }
+    
     // Checksum files
     
     md5sum_check_value_ch = MD5SUM(
@@ -80,7 +84,10 @@ workflow {
         }, by: 0
     )
 
-    coverage_results_ch = MOSDEPTH(mosdepth_ch, [[],[]])
+    coverage_results_ch = MOSDEPTH(
+        mosdepth_ch,
+        human_genome_ch
+    )
 
     MOSDEPTH_CREATEGRAPH(coverage_results_ch.global_txt)
 }
