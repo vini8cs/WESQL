@@ -1,4 +1,4 @@
-process SAMTOOLS_CREATECOVERAGRAPH {
+process SAMTOOLS_CREATECOVERAGEGRAPH {
     tag "$meta.id"
     label 'process_low'
 
@@ -16,5 +16,9 @@ process SAMTOOLS_CREATECOVERAGRAPH {
     script:
     """
     coverage.py -f ${depth_tsv_files}
+    """
+    stub:
+    """
+    touch coverage.svg
     """
 }

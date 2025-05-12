@@ -79,9 +79,9 @@ workflow {
         bed_file_ch.map{ meta, bed_file, _md5 -> tuple(meta, bed_file)}.collect()
     )
 
-    SAMTOOLS_INFERGENETICSEX(coverage_ch)
+    SAMTOOLS_INFERGENETICSEX(coverage_ch.tsv)
 
-    coverage_files_ch = coverage_ch.map {_meta, file ->
+    coverage_files_ch = coverage_ch.tsv.map {_meta, file ->
         def new_meta = [id: "coverage"]
         tuple(new_meta, file)
     }.groupTuple()

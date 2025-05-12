@@ -17,4 +17,8 @@ process SAMTOOLS_INFERGENETICSEX {
     """
     genetic_sex_infer.py -f ${depth_tsv_file}
     """
+    stub:
+    """
+    echo male
+    """
 }
