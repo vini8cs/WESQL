@@ -1,9 +1,11 @@
 include { MD5SUM } from './modules/nf-core/md5sum/main'
 include { MD5SUM_CHECKHASH } from './modules/local/md5sum/checkhash/main'
 include { SAMTOOLS_FLAGSTAT } from './modules/nf-core/samtools/flagstat/main'
-include { SAMTOOLS_STATS } from './modules/nf-core/samtools/stats/main'
-include { MOSDEPTH } from './modules/nf-core/mosdepth/main'
+include { SAMTOOLS_DEPTH } from './modules/local/samtools/depth/main' 
 include { MOSDEPTH_CREATEGRAPH } from './modules/local/mosdepth/creategraph/main'
+include { SAMTOOLS_IDXSTATS } from './modules/nf-core/samtools/idxstats/main'
+include { SAMTOOLS_CREATECOVERAGEGRAPH } from './modules/local/samtools/createcoveragegraph/main'
+include { SAMTOOLS_INFERGENETICSEX } from './modules/local/samtools/infergeneticsex/main'
 
 def remove_item_from_meta(meta, item) {
     def new_meta = meta.clone()
@@ -20,17 +22,13 @@ workflow {
         tuple([id: sample.sample_id, file: "cram_index"], sample.cram_index.path, sample.cram_index.md5)
     }
 
-    bed_file_ch = Channel.fromList(params.samples).map { sample ->
-        tuple([id: sample.sample_id, file: "bed_file"], sample.bed_file.path, sample.bed_file.md5)
+    bed_file_ch = Channel.from(params.bed_file).map { bed_file ->
+        tuple([id: "bed_file"], bed_file.path, bed_file.md5)
     }
 
     samples_ch = cram_file_ch
         .concat(cram_index_ch)
         .concat(bed_file_ch)
-    
-    human_genome_ch = Channel.fromPath(params.human_genome).map { file ->
-        tuple([id: "human_genome"], file)
-    }
     
     // Checksum files
     
@@ -72,22 +70,24 @@ workflow {
     )
 
     SAMTOOLS_FLAGSTAT(cram_ch)
-    SAMTOOLS_STATS(cram_ch, [[],[]])
-    SAMTOOLS_STATS.out.stats.view()
+    SAMTOOLS_IDXSTATS(cram_ch)
 
     // Coverage
-
-    mosdepth_ch = cram_ch.combine(
-        bed_file_ch.map { meta, file, _md5 ->
-            def new_meta = remove_item_from_meta(meta, "file")
-            tuple(new_meta, file)
-        }, by: 0
+    
+    coverage_ch = SAMTOOLS_DEPTH(
+        cram_ch.map{ meta, cram, _crai -> tuple(meta, cram)},
+        bed_file_ch.map{ meta, bed_file, _md5 -> tuple(meta, bed_file)}.collect()
     )
 
-    coverage_results_ch = MOSDEPTH(
-        mosdepth_ch,
-        human_genome_ch
-    )
+    SAMTOOLS_INFERGENETICSEX(coverage_ch)
 
-    MOSDEPTH_CREATEGRAPH(coverage_results_ch.global_txt)
+    coverage_files_ch = coverage_ch.map {_meta, file ->
+        def new_meta = [id: "coverage"]
+        tuple(new_meta, file)
+    }.groupTuple()
+
+    SAMTOOLS_CREATECOVERAGEGRAPH(
+       coverage_files_ch
+    )
+    
 }

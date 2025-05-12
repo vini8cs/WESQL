@@ -1,4 +1,4 @@
-# docker build -t vini8cs/mosdepth_graph:1.0 .
+# docker build -t vini8cs/polars_matplotlib:1.0 .
 FROM mambaorg/micromamba:ubuntu22.04
 
 USER root
@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN micromamba clean --all \
     && micromamba install -y -n base pip=25.0 \
-    && micromamba install -y -n base python=3.12 \
+    && pip install --no-cache-dir polars==1.29.0 \
+    && pip install --no-cache-dir matplotlib==3.10.3 \
     && micromamba env export --name base > environment.lock \
     && echo ">> CONDA_LOCK_START" \
     && cat environment.lock \
@@ -29,6 +30,3 @@ RUN micromamba clean --all \
     && micromamba clean -a -y
 
 ENV PATH="$MAMBA_ROOT_PREFIX/bin:$PATH"
-
-RUN git clone https://github.com/brentp/mosdepth.git \
-    && mv mosdepth /
