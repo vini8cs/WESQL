@@ -23,6 +23,8 @@ RUN micromamba clean --all \
     && micromamba install -y -n base pip=25.0 \
     && pip install --no-cache-dir polars==1.29.0 \
     && pip install --no-cache-dir matplotlib==3.10.3 \
+    && pip install --no-cache-dir pyarrow==20.0.0 \
+    && pip install --no-cache-dir pandas==2.2.3 \
     && micromamba env export --name base > environment.lock \
     && echo ">> CONDA_LOCK_START" \
     && cat environment.lock \
