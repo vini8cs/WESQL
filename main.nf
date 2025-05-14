@@ -6,6 +6,8 @@ include { MOSDEPTH_CREATEGRAPH } from './modules/local/mosdepth/creategraph/main
 include { SAMTOOLS_IDXSTATS } from './modules/nf-core/samtools/idxstats/main'
 include { SAMTOOLS_CREATECOVERAGEGRAPH } from './modules/local/samtools/createcoveragegraph/main'
 include { SAMTOOLS_INFERGENETICSEX } from './modules/local/samtools/infergeneticsex/main'
+include { SAMTOOLS_FASTQ } from './modules/nf-core/samtools/fastq/main'
+include { KRAKEN2_KRAKEN2 } from './modules/nf-core/kraken2/kraken2/main'
 
 def remove_item_from_meta(meta, item) {
     def new_meta = meta.clone()
@@ -89,5 +91,20 @@ workflow {
     SAMTOOLS_CREATECOVERAGEGRAPH(
        coverage_files_ch
     )
+
+    // DNA Contamination
+
+    fastq_files_ch = SAMTOOLS_FASTQ(
+        cram_ch.map{ meta, cram, _crai -> tuple(meta, cram)},
+        Channel.value(false)
+    )
+
+    KRAKEN2_KRAKEN2(
+        fastq_files_ch.fastq,
+        params.KRAKEN_DB,
+        Channel.value(false),
+        Channel.value(false)
+    )
+
     
 }
