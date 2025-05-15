@@ -8,6 +8,9 @@ include { SAMTOOLS_CREATECOVERAGEGRAPH } from './modules/local/samtools/createco
 include { SAMTOOLS_INFERGENETICSEX } from './modules/local/samtools/infergeneticsex/main'
 include { SAMTOOLS_FASTQ } from './modules/nf-core/samtools/fastq/main'
 include { KRAKEN2_KRAKEN2 } from './modules/nf-core/kraken2/kraken2/main'
+include { KRAKENTOOLS_KREPORT2KRONA } from './modules/nf-core/krakentools/kreport2krona/main'
+include { KRONA_KTUPDATETAXONOMY } from './modules/nf-core/krona/ktupdatetaxonomy/main'
+include { KRONA_KTIMPORTTAXONOMY } from './modules/nf-core/krona/ktimporttaxonomy/main'
 
 def remove_item_from_meta(meta, item) {
     def new_meta = meta.clone()
@@ -99,12 +102,19 @@ workflow {
         Channel.value(false)
     )
 
-    KRAKEN2_KRAKEN2(
+    kraken_report_ch = KRAKEN2_KRAKEN2(
         fastq_files_ch.fastq,
         params.KRAKEN_DB,
         Channel.value(false),
         Channel.value(false)
     )
+
+    krona_input_ch = KRAKENTOOLS_KREPORT2KRONA(kraken_report_ch.report)
+    krona_db_ch = KRONA_KTUPDATETAXONOMY() // TODO make it constant
+
+    graph_html = KRONA_KTIMPORTTAXONOMY(krona_input_ch.txt, krona_db_ch.db).html
+
+    
 
     
 }

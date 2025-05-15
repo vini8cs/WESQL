@@ -4,3 +4,9 @@ tower_defaults.config
 .nextflow*
 work
 results
+
+#uv
+uv.lock
+pyptoject.toml
+.python-version
+.venv
