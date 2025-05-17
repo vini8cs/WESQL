@@ -14,11 +14,13 @@ process SAMTOOLS_CREATECOVERAGEGRAPH {
     task.ext.when == null || task.ext.when
 
     script:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    coverage.py -f ${depth_tsv_file}
+    coverage.py -f ${depth_tsv_file} -o ${prefix}.pdf
     """
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch coverage.pdf
+    touch ${prefix}.pdf
     """
 }

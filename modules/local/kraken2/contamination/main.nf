@@ -9,17 +9,19 @@ process KRAKEN2_CONTAMINATION {
 
     output:
     tuple val(meta), path("*.pdf"), emit: pdf
-    tuple val(meta), stdout, emit: contamination_estimation
+    tuple val(meta), path("*.txt"), emit: contamination_estimation
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    create_contamination_plot.py -r ${kraken_report}
+    create_contamination_plot.py -r ${kraken_report} -g ${prefix}.pdf -e ${prefix}.txt
     """
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch contamination_graph.pdf
+    touch ${prefix}.{pdf,txt}
     """
 }
