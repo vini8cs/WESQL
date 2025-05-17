@@ -3,7 +3,6 @@
 		  "path": "/media/vini8cs/HD_vinicius1/hospital_incor/hg38_exome_v2.0.2_targets_sorted_validated.re_annotated.bed",
 		  "md5": "c3a7cea67f992e0412db4b596730d276"
 	},
-	"human_genome": "/media/vini8cs/HD_vinicius1/human_genome/GCF_000001405.40_GRCh38.p14_genomic.fna",
 	"samples": [
 	  {
 		"sample_id": "NA06994",

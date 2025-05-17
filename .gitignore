@@ -4,6 +4,7 @@ tower_defaults.config
 .nextflow*
 work
 results
+params.json
 
 #uv
 uv.lock
