@@ -2,15 +2,12 @@ include { MD5SUM } from './modules/nf-core/md5sum/main'
 include { MD5SUM_CHECKHASH } from './modules/local/md5sum/checkhash/main'
 include { SAMTOOLS_FLAGSTAT } from './modules/nf-core/samtools/flagstat/main'
 include { SAMTOOLS_DEPTH } from './modules/local/samtools/depth/main' 
-include { MOSDEPTH_CREATEGRAPH } from './modules/local/mosdepth/creategraph/main'
 include { SAMTOOLS_IDXSTATS } from './modules/nf-core/samtools/idxstats/main'
 include { SAMTOOLS_CREATECOVERAGEGRAPH } from './modules/local/samtools/createcoveragegraph/main'
 include { SAMTOOLS_INFERGENETICSEX } from './modules/local/samtools/infergeneticsex/main'
 include { SAMTOOLS_FASTQ } from './modules/nf-core/samtools/fastq/main'
 include { KRAKEN2_KRAKEN2 } from './modules/nf-core/kraken2/kraken2/main'
-include { KRAKENTOOLS_KREPORT2KRONA } from './modules/nf-core/krakentools/kreport2krona/main'
-include { KRONA_KTUPDATETAXONOMY } from './modules/nf-core/krona/ktupdatetaxonomy/main'
-include { KRONA_KTIMPORTTAXONOMY } from './modules/nf-core/krona/ktimporttaxonomy/main'
+include { KRAKEN2_CONTAMINATION } from './modules/local/kraken2/contamination/main'
 
 def remove_item_from_meta(meta, item) {
     def new_meta = meta.clone()
@@ -92,7 +89,7 @@ workflow {
     }.groupTuple()
 
     SAMTOOLS_CREATECOVERAGEGRAPH(
-       coverage_files_ch
+    coverage_files_ch
     )
 
     // DNA Contamination
@@ -109,12 +106,33 @@ workflow {
         Channel.value(false)
     )
 
-    krona_input_ch = KRAKENTOOLS_KREPORT2KRONA(kraken_report_ch.report)
-    krona_db_ch = KRONA_KTUPDATETAXONOMY() // TODO make it constant
+    contamination_ch = KRAKEN2_CONTAMINATION(kraken_report_ch.report)
 
-    graph_html = KRONA_KTIMPORTTAXONOMY(krona_input_ch.txt, krona_db_ch.db).html
+    contamination_plot_ch = contamination_ch.pdf
+    contamination_estimation_ch = contamination_ch.contamination_estimation
+        
+}
 
-    
+workflow.onComplete {
+    if (workflow.success) {
+        log.info "Pipeline finished successfully"
+        def date = new java.util.Date().format('yyyy-MM-dd HH-mm-ss')
+        
+        def msg = """
+        date: ${date}
+        time: ${workflow.duration}
+        command line: ${workflow.commandLine}
+        """
 
-    
+        println msg
+
+    } else {
+        log.error "Pipeline finished with errors"
+        def error = workflow.errorMessage.replace('"', "'")
+        def msg = """
+            error: ${error}
+            command line: ${workflow.commandLine}
+            """
+        println msg
+    }
 }

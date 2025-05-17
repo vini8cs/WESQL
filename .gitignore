@@ -7,6 +7,6 @@ results
 
 #uv
 uv.lock
-pyptoject.toml
+pyproject.toml
 .python-version
 .venv

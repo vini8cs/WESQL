@@ -36,7 +36,7 @@ def create_coverage_graph(grafh_df, chr_name):
     plt.title(f"Coverage Distribution - {chr_name}")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"{chr_name}_coverage.svg")
+    plt.savefig(f"{chr_name}_coverage.pdf", format="pdf")
     plt.close()
 
 

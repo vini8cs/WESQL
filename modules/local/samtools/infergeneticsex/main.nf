@@ -8,7 +8,7 @@ process SAMTOOLS_INFERGENETICSEX {
     tuple val(meta), path(depth_tsv_file)
 
     output:
-    tuple val(meta), stdout
+    tuple val(meta), path("*.txt"), emit: txt
 
     when:
     task.ext.when == null || task.ext.when
@@ -19,6 +19,6 @@ process SAMTOOLS_INFERGENETICSEX {
     """
     stub:
     """
-    echo male
+    touch sex_infer.txt
     """
 }
