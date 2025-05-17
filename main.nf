@@ -8,11 +8,19 @@ include { SAMTOOLS_INFERGENETICSEX } from './modules/local/samtools/infergenetic
 include { SAMTOOLS_FASTQ } from './modules/nf-core/samtools/fastq/main'
 include { KRAKEN2_KRAKEN2 } from './modules/nf-core/kraken2/kraken2/main'
 include { KRAKEN2_CONTAMINATION } from './modules/local/kraken2/contamination/main'
+include { REPORTPDF } from './modules/local/reportpdf/main'
 
-def remove_item_from_meta(meta, item) {
+def removeItemFromMeta(meta, item) {
     def new_meta = meta.clone()
     new_meta.remove(item)
     return new_meta
+}
+
+def groupFilesByID(ch, new_id) {
+    return ch.map{meta, file ->
+            def new_meta = [id: new_id]
+            tuple(new_meta, file)
+    }.groupTuple()
 }
 
 workflow {
@@ -62,16 +70,16 @@ workflow {
     // Alignment Statistics
 
     cram_ch = cram_file_ch.map { meta, file, _md5 ->
-        def new_meta = remove_item_from_meta(meta, "file")
+        def new_meta = removeItemFromMeta(meta, "file")
         tuple(new_meta, file)
     }.combine(
         cram_index_ch.map { meta, file, _md5 ->
-            def new_meta = remove_item_from_meta(meta, "file")
+            def new_meta = removeItemFromMeta(meta, "file")
             tuple(new_meta, file)
         }, by: 0
     )
 
-    SAMTOOLS_FLAGSTAT(cram_ch)
+    alignment_statistics_ch = SAMTOOLS_FLAGSTAT(cram_ch).flagstat
     SAMTOOLS_IDXSTATS(cram_ch)
 
     // Coverage
@@ -81,16 +89,16 @@ workflow {
         bed_file_ch.map{ meta, bed_file, _md5 -> tuple(meta, bed_file)}.collect()
     )
 
-    SAMTOOLS_INFERGENETICSEX(coverage_ch.tsv)
+    sex_inference_ch = SAMTOOLS_INFERGENETICSEX(coverage_ch.tsv).txt
 
     coverage_files_ch = coverage_ch.tsv.map {_meta, file ->
         def new_meta = [id: "coverage"]
         tuple(new_meta, file)
     }.groupTuple()
 
-    SAMTOOLS_CREATECOVERAGEGRAPH(
+    coverage_plots_ch = SAMTOOLS_CREATECOVERAGEGRAPH(
     coverage_files_ch
-    )
+    ).pdf
 
     // DNA Contamination
 
@@ -110,7 +118,14 @@ workflow {
 
     contamination_plot_ch = contamination_ch.pdf
     contamination_estimation_ch = contamination_ch.contamination_estimation
-        
+    
+    REPORTPDF(
+        groupFilesByID(alignment_statistics_ch, "aligment_statistics"),
+        groupFilesByID(sex_inference_ch, "sex_inference"),
+        coverage_plots_ch,
+        groupFilesByID(contamination_plot_ch, "contamination_plots"),
+        groupFilesByID(contamination_estimation_ch, "contamination_estimation"),
+    )
 }
 
 workflow.onComplete {

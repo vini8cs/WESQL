@@ -17,11 +17,11 @@ process KRAKEN2_CONTAMINATION {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    create_contamination_plot.py -r ${kraken_report} -g ${prefix}.pdf -e ${prefix}.txt
+    create_contamination_plot.py -r ${kraken_report} -g ${prefix}_Contamination.pdf -e ${prefix}_Contamination.txt
     """
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix}.{pdf,txt}
+    touch ${prefix}_Contamination.{pdf,txt}
     """
 }
