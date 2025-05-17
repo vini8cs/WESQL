@@ -5,7 +5,7 @@ process SAMTOOLS_CREATECOVERAGEGRAPH {
     container "docker.io/vini8cs/polars_matplotlib:1.0"
 
     input:
-    tuple val(meta), path(depth_tsv_files)
+    tuple val(meta), path(depth_tsv_file)
 
     output:
     tuple val(meta), path("*.pdf"), emit: pdf
@@ -15,7 +15,7 @@ process SAMTOOLS_CREATECOVERAGEGRAPH {
 
     script:
     """
-    coverage.py -f ${depth_tsv_files}
+    coverage.py -f ${depth_tsv_file}
     """
     stub:
     """

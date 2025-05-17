@@ -9,7 +9,7 @@ import polars as pl
 
 def get_options() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create coverage graphs")
-    parser.add_argument("-f", "--depth_files", nargs="+", help="depth files from Samtools", required=True)
+    parser.add_argument("-f", "--depth_file", help="depth files from Samtools", required=True)
     options = parser.parse_args()
 
     return options
@@ -42,17 +42,13 @@ def create_coverage_graph(grafh_df, chr_name):
 
 def main():
     menu = get_options()
-    lazy_frames = [
-        pl.scan_csv(
-            file,
-            separator="\t",
-            has_header=False,
-            new_columns=["chr", "pos", "depth"],
-        ).with_columns(pl.lit(os.path.splitext(os.path.basename(file))[0]).alias("sample"))
-        for file in menu.depth_files
-    ]
+    df_lazy = pl.scan_csv(
+        menu.depth_file,
+        separator="\t",
+        has_header=False,
+        new_columns=["chr", "pos", "depth"],
+    ).with_columns(pl.lit(os.path.splitext(os.path.basename(menu.depth_file))[0]).alias("sample"))
 
-    df_lazy = pl.concat(lazy_frames)
     chr_list = df_lazy.select("chr").unique().collect()["chr"].to_list()
 
     for chr_name in chr_list:
