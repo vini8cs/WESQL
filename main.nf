@@ -83,7 +83,14 @@ workflow {
 
     SAMTOOLS_INFERGENETICSEX(coverage_ch.tsv)
 
-    SAMTOOLS_CREATECOVERAGEGRAPH(coverage_ch.tsv)
+    coverage_files_ch = coverage_ch.tsv.map {_meta, file ->
+        def new_meta = [id: "coverage"]
+        tuple(new_meta, file)
+    }.groupTuple()
+
+    SAMTOOLS_CREATECOVERAGEGRAPH(
+    coverage_files_ch
+    )
 
     // DNA Contamination
 
