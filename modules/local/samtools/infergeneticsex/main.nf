@@ -14,11 +14,13 @@ process SAMTOOLS_INFERGENETICSEX {
     task.ext.when == null || task.ext.when
 
     script:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    genetic_sex_infer.py -f ${depth_tsv_file}
+    genetic_sex_infer.py -f ${depth_tsv_file} -o ${prefix}.txt
     """
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch sex_infer.txt
+    touch ${prefix}.txt
     """
 }
