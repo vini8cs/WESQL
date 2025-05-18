@@ -1,30 +1,50 @@
 # WESQL
+
 Whole Exome Sequencing (WES) Quality Control Pipeline
 
-## 1. Author Identification
-**Author:** Vinícius Castro Santos
-**Contact:** vini8cs@gmail.com
+<!-- vscode-markdown-toc -->
+* 1. [Author Identification](#AuthorIdentification)
+* 2. [Pipeline Description](#PipelineDescription)
+* 3. [Usage Instructions](#UsageInstructions)
+	* 3.1. [Clone the Repository](#ClonetheRepository)
+	* 3.2. [Install Dependencies](#InstallDependencies)
+	* 3.3. [Prepare Input Files](#PrepareInputFiles)
+	* 3.4. [Run the Pipeline](#RunthePipeline)
+	* 3.5. [Tools](#Tools)
+	* 3.6. [Outputs and Expected Results](#OutputsandExpectedResults)
+* 4. [System Requirements](#SystemRequirements)
 
-## 2. Pipeline Description
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+##  1. <a name='AuthorIdentification'></a>Author Identification
+
+- **Author:** Vinícius Castro Santos
+- **Contact:** vini8cs@gmail.com
+
+##  2. <a name='PipelineDescription'></a>Pipeline Description
 This repository contains a Nextflow-based pipeline for genome analysis. The pipeline processes CRAM files, performs alignment statistics, computes genome coverage, infers biological sex, and evaluates DNA contamination levels. It generates comprehensive reports in Markdown and PDF formats, including visualizations and detailed metrics.
 
-## 3. Usage Instructions
+##  3. <a name='UsageInstructions'></a>Usage Instructions
 
-### 3.1. Clone the Repository
+###  3.1. <a name='ClonetheRepository'></a>Clone the Repository
 
 ```bash
 git clone https://github.com/vini8cs/WESQL.git
 cd WESQL
 ```
 
-### 3.2. Install Dependencies
+###  3.2. <a name='InstallDependencies'></a>Install Dependencies
 
 Ensure all dependencies (listed below) are installed and accessible in your environment.
 
 - [Nextflow](https://www.nextflow.io/docs/latest/install.html)
 - [Docker](https://docs.docker.com/engine/install/ubuntu/#install-from-a-package)
 
-### 3.3. Prepare Input Files
+###  3.3. <a name='PrepareInputFiles'></a>Prepare Input Files
 
 - **CRAM Files**: Provide CRAM files for the samples to be analyzed. Examples can be downloaded [here](https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/CEU/NA06994/exome_alignment/).
 
@@ -53,7 +73,7 @@ These files should be specified in a JSON file based on the provided template `p
   - **Integrating the Database into the Pipeline**:  
     To use the database in the pipeline, its path must be specified in the `params.nf` configuration file. A template file (`params.nf.example`) is provided in the repository to guide users in setting up the parameters. Update the `kraken_db` parameter in the configuration file to point to the extracted database directory.
 
-### 3.4. Run the Pipeline
+###  3.4. <a name='RunthePipeline'></a>Run the Pipeline
 
 ```bash
 nextflow run main.nf -params-file <path/to/json> [ -w path/to/workdir --outdir <path/to/outdir_folder> --author <author_name> --kraken2_cpus <int> --debug -bg -resume -stub -profile stub ]
@@ -81,7 +101,7 @@ nextflow run main.nf -params-file <path/to/json> [ -w path/to/workdir --outdir <
     - **stub**: `stub` should be used with `-profile stub` and it's onçy for testing purposes.
 
 
-### 3.5. Tools
+###  3.5. <a name='Tools'></a>Tools
 
 The pipeline relies on the following tools, each chosen for their specific strengths in genome analysis:
 
@@ -99,7 +119,7 @@ The pipeline relies on the following tools, each chosen for their specific stren
 
 These tools were selected for their reliability, performance, and widespread adoption in the genomics community, ensuring robust and reproducible results for the analyses performed in this pipeline.
 
-### 3.6. Outputs and Expected Results
+###  3.6. <a name='OutputsandExpectedResults'></a>Outputs and Expected Results
 
 The pipeline generates the following outputs:
 
@@ -113,7 +133,7 @@ The pipeline generates the following outputs:
 
 Examples of output files and logs can be found here in the path `tests/example_outputs`. Log files are located in the `pipeline_info`folder.
 
-### 3.7. System Requirements
+##  4. <a name='SystemRequirements'></a>System Requirements
 
 The machine running this pipeline must meet the following minimum requirements:
 
