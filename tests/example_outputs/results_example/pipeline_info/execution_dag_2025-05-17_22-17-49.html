@@ -1,0 +1,162 @@
+<!--
+  ~ Copyright 2013-2024, Seqera Labs
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromList"]
+    v2["Channel.fromList"]
+    v4["Channel.from"]
+    v9[" "]
+    v35[" "]
+    v41[" "]
+    v42[" "]
+    v43[" "]
+    end
+    v1([map])
+    v3([map])
+    v5([map])
+    v6([concat])
+    v7([concat])
+    v8([map])
+    v10([MD5SUM])
+    subgraph " "
+    v11[" "]
+    v21[" "]
+    v23[" "]
+    v24[" "]
+    v29[" "]
+    v37[" "]
+    v38[" "]
+    v39[" "]
+    v40[" "]
+    v45[" "]
+    v46[" "]
+    v47[" "]
+    v48[" "]
+    v59[" "]
+    v60[" "]
+    end
+    v12([map])
+    v13([combine])
+    v14([MD5SUM_CHECKHASH])
+    v15([collect])
+    v16([subscribe])
+    v17([map])
+    v18([map])
+    v19([combine])
+    v20([SAMTOOLS_FLAGSTAT])
+    v22([SAMTOOLS_IDXSTATS])
+    v25([map])
+    v26([map])
+    v27([collect])
+    v28([SAMTOOLS_DEPTH])
+    v30([SAMTOOLS_INFERGENETICSEX])
+    v31([map])
+    v32([groupTuple])
+    v33([SAMTOOLS_CREATECOVERAGEGRAPH])
+    v34([map])
+    v36([SAMTOOLS_FASTQ])
+    v44([KRAKEN2_KRAKEN2])
+    v49([KRAKEN2_CONTAMINATION])
+    v50([map])
+    v51([groupTuple])
+    v52([map])
+    v53([groupTuple])
+    v54([map])
+    v55([groupTuple])
+    v56([map])
+    v57([groupTuple])
+    v58([REPORTPDF])
+    v0 --> v1
+    v1 -->|cram_file_ch| v6
+    v1 -->|cram_file_ch| v17
+    v2 --> v3
+    v3 -->|cram_index_ch| v6
+    v3 -->|cram_index_ch| v18
+    v4 --> v5
+    v5 -->|bed_file_ch| v7
+    v5 -->|bed_file_ch| v26
+    v6 --> v7
+    v7 -->|samples_ch| v8
+    v7 -->|samples_ch| v12
+    v8 --> v10
+    v9 -->|as_separate_files| v10
+    v10 --> v13
+    v10 --> v11
+    v12 --> v13
+    v13 --> v14
+    v14 -->|-| v15
+    v15 --> v16
+    v17 --> v19
+    v18 --> v19
+    v19 -->|cram_ch| v20
+    v19 -->|cram_ch| v22
+    v19 -->|cram_ch| v25
+    v19 -->|cram_ch| v34
+    v20 -->|alignment_statistics_ch| v50
+    v20 --> v21
+    v22 --> v24
+    v22 --> v23
+    v25 --> v28
+    v26 --> v27
+    v27 --> v28
+    v28 --> v30
+    v28 --> v29
+    v28 --> v31
+    v30 -->|sex_inference_ch| v52
+    v31 --> v32
+    v32 -->|coverage_files_ch| v33
+    v33 -->|coverage_plots_ch| v58
+    v34 --> v36
+    v35 -->|interleave| v36
+    v36 --> v44
+    v36 --> v40
+    v36 --> v39
+    v36 --> v38
+    v36 --> v37
+    v41 -->|db| v44
+    v42 -->|save_output_fastqs| v44
+    v43 -->|save_reads_assignment| v44
+    v44 --> v48
+    v44 --> v47
+    v44 --> v46
+    v44 --> v49
+    v44 --> v45
+    v49 -->|contamination_plot_ch| v54
+    v49 -->|contamination_estimation_ch| v56
+    v50 --> v51
+    v51 --> v58
+    v52 --> v53
+    v53 --> v58
+    v54 --> v55
+    v55 --> v58
+    v56 --> v57
+    v57 --> v58
+    v58 --> v60
+    v58 --> v59
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, maxTextSize: Number.MAX_SAFE_INTEGER, maxEdges: Number.MAX_SAFE_INTEGER });
+</script>
+</body>
+</html>

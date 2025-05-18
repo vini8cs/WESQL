@@ -1,30 +1,30 @@
 {	
 	"bed_file": {
-		  "path": "/media/vini8cs/HD_vinicius1/hospital_incor/hg38_exome_v2.0.2_targets_sorted_validated.re_annotated.bed",
-		  "md5": "c3a7cea67f992e0412db4b596730d276"
+		  "path": "path/to/bed_file",
+		  "md5": "md5_hash"
 	},
 	"samples": [
 	  {
 		"sample_id": "NA06994",
 		"cram_file": {
-		  "path": "/media/vini8cs/HD_vinicius1/hospital_incor/NA06994.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram",
-		  "md5": "3d8d8dc27d85ceaf0daefa493b8bd660"
+		  "path": "path/to/cram_file",
+		  "md5": "md5_hash"
 		},
 		"cram_index": {
-		  "path": "/media/vini8cs/HD_vinicius1/hospital_incor/NA06994.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram.crai",
-		  "md5": "15a6576f46f51c37299fc004ed47fcd9"
+		  "path": "path/to/cram_index_file",
+		  "md5": "md5_hash"
 		}
 	  },
 	  {
 		"sample_id": "NA12878",
 		"cram_file": {
-		  "path": "/media/vini8cs/HD_vinicius1/hospital_incor/NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram",
-		  "md5": "2b79e04b3c9b412d65cfd5f65c425fa0"
-		},
-		"cram_index": {
-		  "path": "/media/vini8cs/HD_vinicius1/hospital_incor/NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome.cram.crai",
-		  "md5": "67e9508a470934f8d8840e941d449477"
+			"path": "path/to/cram_file",
+			"md5": "md5_hash"
+		  },
+		  "cram_index": {
+			"path": "path/to/cram_crai_index_file",
+			"md5": "md5_hash"
+		  }
 		}
-	  }
 	]
   }
