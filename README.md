@@ -13,6 +13,10 @@ Whole Exome Sequencing (WES) Quality Control Pipeline
 	* 3.5. [Tools](#Tools)
 	* 3.6. [Outputs and Expected Results](#OutputsandExpectedResults)
 * 4. [System Requirements](#SystemRequirements)
+* 5. [Using Seqera Tower with Tower Token](#UsingSeqeraTowerwithTowerToken)
+	* 5.1. [Create a Seqera Tower Account](#CreateaSeqeraTowerAccount)
+	* 5.2. [Generate a Tower Token](#GenerateaTowerToken)
+	* 5.3. [Configure Nextflow to Use the Tower Token](#ConfigureNextflowtoUsetheTowerToken)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -143,3 +147,28 @@ The machine running this pipeline must meet the following minimum requirements:
 - **Operating System**: Linux-based systems are recommended for compatibility with Nextflow and Docker.
 
 Failure to meet these requirements may result in performance issues or pipeline failures.
+
+##  5. <a name='UsingSeqeraTowerwithTowerToken'></a>Using Seqera Tower with Tower Token
+
+Seqera Tower is a centralized platform for monitoring and managing Nextflow pipelines. It provides a user-friendly interface for tracking pipeline executions, visualizing workflows, and managing resources. To use Seqera Tower with this pipeline, follow the steps below:
+
+###  5.1. <a name='CreateaSeqeraTowerAccount'></a>Create a Seqera Tower Account
+
+1. Visit the [Seqera Tower website](https://tower.nf/) and create an account.
+
+2. Log in to your account to access the dashboard.
+
+###  5.2. <a name='GenerateaTowerToken'></a>Generate a Tower Token
+
+1. Navigate to your user profile in Seqera Tower.
+2. Select **Access Tokens** from the menu.
+3. Click **Generate Token**, provide a name for the token (e.g., `WESQL Pipeline`), and copy the generated token.
+
+###  5.3. <a name='ConfigureNextflowtoUsetheTowerToken'></a>Configure Nextflow to Use the Tower Token
+
+To configure Nextflow to use the Tower token, follow these steps:
+Use the provided file `conf/tower_defaults.config.example` as a template for your configuration. Copy it to create a new configuration file:
+
+```bash
+cp conf/tower_defaults.config.example conf/tower_defaults.config
+```
