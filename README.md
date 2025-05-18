@@ -45,7 +45,7 @@ cd WESQL
 
 Ensure all dependencies (listed below) are installed and accessible in your environment.
 
-- [Nextflow](https://www.nextflow.io/docs/latest/install.html)
+- [Nextflow](https://www.nextflow.io/docs/latest/install.html) (>= v.24.04.4)
 - [Docker](https://docs.docker.com/engine/install/ubuntu/#install-from-a-package)
 
 ###  3.3. <a name='PrepareInputFiles'></a>Prepare Input Files
