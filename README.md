@@ -131,7 +131,7 @@ The pipeline generates the following outputs:
     - **Markdown report** (`report.md`).
     - **PDF report** (`report.pdf`).
 
-Examples of output files and logs can be found here in the path `tests/example_outputs`. Log files are located in the `pipeline_info`folder.
+Examples of output files and logs can be found [here](https://drive.google.com/drive/folders/1azmIbo91Z8HYsNX-AKZiP0p5ypS4NLxR?usp=sharing)
 
 ##  4. <a name='SystemRequirements'></a>System Requirements
 
