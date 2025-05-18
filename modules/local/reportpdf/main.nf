@@ -27,4 +27,9 @@ process REPORTPDF {
     
     pandoc report.md -o report.pdf --pdf-engine=pdflatex
     """
+    stub:
+    """
+    touch report.pdf
+    touch report.md
+    """
 }

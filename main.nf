@@ -1,23 +1,11 @@
-include { MD5SUM } from './modules/nf-core/md5sum/main'
-include { MD5SUM_CHECKHASH } from './modules/local/md5sum/checkhash/main'
-include { SAMTOOLS_FLAGSTAT } from './modules/nf-core/samtools/flagstat/main'
-include { SAMTOOLS_DEPTH } from './modules/local/samtools/depth/main' 
-include { SAMTOOLS_IDXSTATS } from './modules/nf-core/samtools/idxstats/main'
-include { SAMTOOLS_CREATECOVERAGEGRAPH } from './modules/local/samtools/createcoveragegraph/main'
-include { SAMTOOLS_INFERGENETICSEX } from './modules/local/samtools/infergeneticsex/main'
-include { SAMTOOLS_FASTQ } from './modules/nf-core/samtools/fastq/main'
-include { KRAKEN2_KRAKEN2 } from './modules/nf-core/kraken2/kraken2/main'
-include { KRAKEN2_CONTAMINATION } from './modules/local/kraken2/contamination/main'
+include { MD5_CHECK_PROCESS } from './subworkflows/md5_check_process/main'
+include { ALIGNMENT_STATISTICS } from './subworkflows/alignment_statistics/main'
+include { GENOME_COVERAGE } from './subworkflows/genome_coverage/main'
+include { DNA_CONTAMINATION } from './subworkflows/dna_contamination/main'
 include { REPORTPDF } from './modules/local/reportpdf/main'
 
-def removeItemFromMeta(meta, item) {
-    def new_meta = meta.clone()
-    new_meta.remove(item)
-    return new_meta
-}
-
 def groupFilesByID(ch, new_id) {
-    return ch.map{meta, file ->
+    return ch.map{_meta, file ->
             def new_meta = [id: new_id]
             tuple(new_meta, file)
     }.groupTuple()
@@ -39,85 +27,22 @@ workflow {
     samples_ch = cram_file_ch
         .concat(cram_index_ch)
         .concat(bed_file_ch)
-    
-    // Checksum files
-    
-    md5sum_check_value_ch = MD5SUM(
-        samples_ch.map{meta, file, _md5 -> 
-            tuple(meta, file)
-        }, 
-        Channel.value(false)
+
+    MD5_CHECK_PROCESS(samples_ch)
+
+    (alignment_statistics_ch, cram_ch) =  ALIGNMENT_STATISTICS(
+        cram_file_ch,
+        cram_index_ch
     )
 
-    all_files_valid = MD5SUM_CHECKHASH(
-        md5sum_check_value_ch.checksum
-            .combine(
-                samples_ch.map{meta, _file, md5 ->
-                    tuple(meta, md5)}, by: 0
-            )
-    )
-    
-    all_files_valid.collect().subscribe { results ->
-        def bool_results = results.collect { it.toString().trim() == 'true' }
-        if (bool_results.every { it }) {
-            log.info("All files passed the MD5 checksum validation.")
-        } else {
-            log.error("Some files failed the MD5 checksum validation.")
-            error("Workflow stopped due to invalid files.")
-        }
-    }
-
-    // Alignment Statistics
-
-    cram_ch = cram_file_ch.map { meta, file, _md5 ->
-        def new_meta = removeItemFromMeta(meta, "file")
-        tuple(new_meta, file)
-    }.combine(
-        cram_index_ch.map { meta, file, _md5 ->
-            def new_meta = removeItemFromMeta(meta, "file")
-            tuple(new_meta, file)
-        }, by: 0
+    (coverage_plots_ch, sex_inference_ch) = GENOME_COVERAGE(
+        cram_ch,
+        bed_file_ch
     )
 
-    alignment_statistics_ch = SAMTOOLS_FLAGSTAT(cram_ch).flagstat
-    SAMTOOLS_IDXSTATS(cram_ch)
-
-    // Coverage
-    
-    coverage_ch = SAMTOOLS_DEPTH(
-        cram_ch.map{ meta, cram, _crai -> tuple(meta, cram)},
-        bed_file_ch.map{ meta, bed_file, _md5 -> tuple(meta, bed_file)}.collect()
+    (contamination_plot_ch, contamination_estimation_ch) = DNA_CONTAMINATION(
+        cram_ch
     )
-
-    sex_inference_ch = SAMTOOLS_INFERGENETICSEX(coverage_ch.tsv).txt
-
-    coverage_files_ch = coverage_ch.tsv.map {_meta, file ->
-        def new_meta = [id: "coverage"]
-        tuple(new_meta, file)
-    }.groupTuple()
-
-    coverage_plots_ch = SAMTOOLS_CREATECOVERAGEGRAPH(
-    coverage_files_ch
-    ).pdf
-
-    // DNA Contamination
-
-    fastq_files_ch = SAMTOOLS_FASTQ(
-        cram_ch.map{ meta, cram, _crai -> tuple(meta, cram)},
-        Channel.value(false)
-    )
-
-    kraken_report_ch = KRAKEN2_KRAKEN2(
-        fastq_files_ch.fastq,
-        params.KRAKEN_DB,
-        Channel.value(false),
-        Channel.value(false)
-    )
-
-    contamination_ch = KRAKEN2_CONTAMINATION(kraken_report_ch.report)
-
-    contamination_plot_ch = contamination_ch.pdf
-    contamination_estimation_ch = contamination_ch.contamination_estimation
     
     REPORTPDF(
         groupFilesByID(alignment_statistics_ch, "aligment_statistics"),
