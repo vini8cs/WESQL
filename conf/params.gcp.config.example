@@ -1,6 +1,8 @@
 params {
-    KRAKEN_DB = "path/to/kraken_db"
+    KRAKEN_DB = "gs://<bucket>/path/to/kraken_db/kraken_standard8_db"
     PROJECT = "your-gcp-project-id"
     REGION = "region"
     WORKDIR = "gs://your-gcs-bucket-name/workdir"
 }
+    
+    
