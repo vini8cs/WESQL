@@ -8,8 +8,8 @@ Whole Exome Sequencing (WES) Quality Control Pipeline
 * 3. [Usage Instructions](#UsageInstructions)
 	* 3.1. [Clone the Repository](#ClonetheRepository)
 	* 3.2. [Install Dependencies](#InstallDependencies)
-	* 3.3. [Prepare Input Files](#PrepareInputFiles)
-	* 3.4. [Run the Pipeline](#RunthePipeline)
+	* 3.3. [Run the Pipeline](#RunthePipeline)
+	* 3.4. [Prepare Input Files](#PrepareInputFiles)
 	* 3.5. [Tools](#Tools)
 	* 3.6. [Outputs and Expected Results](#OutputsandExpectedResults)
 * 4. [System Requirements](#SystemRequirements)
@@ -48,7 +48,46 @@ Ensure all dependencies (listed below) are installed and accessible in your envi
 - [Nextflow](https://www.nextflow.io/docs/latest/install.html) (>= v.24.04.4)
 - [Docker](https://docs.docker.com/engine/install/ubuntu/#install-from-a-package)
 
-###  3.3. <a name='PrepareInputFiles'></a>Prepare Input Files
+###  3.3. <a name='RunthePipeline'></a>Run the Pipeline
+
+```bash
+nextflow run main.nf -params-file <path/to/json> [ -w path/to/workdir --outdir <path/to/outdir_folder> --author <author_name> --kraken2_cpus <int> --debug -bg -resume -stub -profile <stub,standard,gcp> ]
+```
+- Mandatory:
+
+    - **params-file**: Path to a JSON file containing input parameters for the pipeline. This file should define all necessary inputs (e.g., CRAM files, BED file, etc.) in structured format.
+
+- Optional:
+
+    - **w**: Defines a custom working directory where Nextflow stores intermediate files. If not specified, Nextflow will use the default `.nextflow` directory.
+
+    - **outdir**: Output directory where all final results (e.g., quality control reports, aligned reads, summary files) will be saved.  Nextflow will use the default `results` directory.
+
+    - **author**: Sets the author name in the output report.
+
+    - **debug**: Enables debug mode, which may provide additional log output or preserve intermediate files for troubleshooting purposes.
+
+    - **bg**: Runs the pipeline in the background (useful for long-running jobs). This option is often used when launching from a script or terminal session.
+
+    - **resume**: Resumes the pipeline execution from the last successful step. This is particularly useful if the process was interrupted or if you are re-running with unchanged input files.
+
+    - **kraken2_cpus**: Specifies the number of CPU cores to allocate for Kraken2, a taxonomic sequence classification system. Increasing the number of CPUs can improve processing speed for large datasets. Deafult: 30
+
+    - **stub**: `stub` should be used with `-profile stub` or `profile gcp` and it's only for testing purposes.
+
+    - **profile**: There are three run profile options for this pipeline: 
+      - 1. `stub`: test only.
+      - 2. `standard`: local run (use `param.nf` to add inputs).
+      - 3. `gcp`: run using Google Cloud Batch use `params.gcp.nf` to add inputs.
+
+
+###  3.4. <a name='PrepareInputFiles'></a>Prepare Input Files
+
+- **params file**:
+  - KRAKEN_DB = kraken database path.
+  - PROJECT = GCP project; (gcp only).
+  - REGION = region to run GCP Nextflow batch (gcp only).
+  - WORKDIR = workir bucket on GCP (gcp only)
 
 - **CRAM Files**: Provide CRAM files for the samples to be analyzed. Examples can be downloaded [here](https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/CEU/NA06994/exome_alignment/).
 
@@ -73,37 +112,6 @@ These files should be specified in a JSON file based on the provided template `p
 
   - **Alternative Databases**:  
     If a more comprehensive analysis is required, larger databases can be used. These are available [here](https://benlangmead.github.io/aws-indexes/k2). Larger databases may improve classification accuracy but require more computational resources.
-
-  - **Integrating the Database into the Pipeline**:  
-    To use the database in the pipeline, its path must be specified in the `params.nf` configuration file. A template file (`params.nf.example`) is provided in the repository to guide users in setting up the parameters. Update the `kraken_db` parameter in the configuration file to point to the extracted database directory.
-
-###  3.4. <a name='RunthePipeline'></a>Run the Pipeline
-
-```bash
-nextflow run main.nf -params-file <path/to/json> [ -w path/to/workdir --outdir <path/to/outdir_folder> --author <author_name> --kraken2_cpus <int> --debug -bg -resume -stub -profile stub ]
-```
-- Mandatory:
-
-    - **params-file**: Path to a JSON file containing input parameters for the pipeline. This file should define all necessary inputs (e.g., CRAM files, BED file, etc.) in structured format.
-
-- Optional:
-
-    - **w**: Defines a custom working directory where Nextflow stores intermediate files. If not specified, Nextflow will use the default `.nextflow` directory.
-
-    - **outdir**: Output directory where all final results (e.g., quality control reports, aligned reads, summary files) will be saved.  Nextflow will use the default `results` directory.
-
-    - **author**: Sets the author name in the output report.
-
-    - **debug**: Enables debug mode, which may provide additional log output or preserve intermediate files for troubleshooting purposes.
-
-    - **bg**: Runs the pipeline in the background (useful for long-running jobs). This option is often used when launching from a script or terminal session.
-
-    - **resume**: Resumes the pipeline execution from the last successful step. This is particularly useful if the process was interrupted or if you are re-running with unchanged input files.
-
-    - **kraken2_cpus**: Specifies the number of CPU cores to allocate for Kraken2, a taxonomic sequence classification system. Increasing the number of CPUs can improve processing speed for large datasets. Deafult: 30
-
-    - **stub**: `stub` should be used with `-profile stub` and it's onçy for testing purposes.
-
 
 ###  3.5. <a name='Tools'></a>Tools
 
