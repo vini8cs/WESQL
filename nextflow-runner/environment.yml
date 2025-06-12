@@ -1,0 +1,11 @@
+name: nextflow-runner
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - nextflow
+  - pip
+  - pip:
+      - requests
+      - subprocess32
+      - click
